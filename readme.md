@@ -66,9 +66,118 @@ data_movie = read_json_file("./static/data/movie_item.json")
 data_movie = clean_movie(data_movie)
 ```
 经过上诉读取和清洗，得到的数据如下：
-![img.png](img.png)
+
+![img.png](static/img/img.png)
+
 
 - ## 2. 数据分析
+  - 描述性统计分析
+  - 相关性分析
+  - 模型预测分析
+  - ###  描述性统计分析
+```
+class MovieAnalysis:
+    list_genre = []
+    """这是一个数据分析的类，包含各列排行前10"""
+    def __init__(self, date_movie):
+        self.date_movie = date_movie
+
+    def movie_sort(self, name):
+        """
+        这是定义了一个排序的方法，用于对电影进行排序，date.sort_values() 该方法是dateframe中的排序方法
+        :param name: 输入需要排序的列，经过date.sort_values()的降序排列，提取排行前10的数据
+        :return: 返回排行前10的电影标题和对应的数据
+        """
+        movie_sort_name = self.date_movie.sort_values(name, ascending=False)[["movie_title", name]].head(10)
+        print(movie_sort_name)
+
+    def count_list(self, colums):
+        """
+        这个方法是统计ddateframe中某一列列表中元素出现的次数
+        思路：
+            1. 将每一列的列表合并，放进一个大的列表中
+            2. 在大的列表中计算出每一个元素出现的次数
+            3. 排序，输出 pd.value_counts()函数，可以快速统计列表中的元素个数，并排序
+        :return: 返回统计结果
+        """
+        for index_name, rows in self.date_movie.iterrows():
+            if type(rows[colums]) is list:
+                self.list_genre.extend(rows[colums])
+                count_res = pd.value_counts(self.list_genre)
+            else:
+                count_res = type(rows[colums])
+        count_res = pd.DataFrame(count_res, columns=["数目"])
+        return count_res
+```  
+   - 首先我为了方便美观，我建立了一个数据分析的类，有关的分析方法全部写在类中，这样做也许不能使代码变得简洁，但是
+     却能美观，不用过很长时间后看代码的时候不知道顺序
+   - 其次在类中定义的方法可以直接实例化一个对象，传入需要分析的数据文件就可以了
+   - 实例化对象,后续分析直接用对象.方法就可以了
+```
+data_movie_analysis = MovieAnalysis(data_movie)  # 创建一个类，将date数据传入，定义方法进行详细分析。
+```     
+- ### 2.1 总评分最高的前10部电影
+```
+data_movie_analysis.movie_sort("rating_num")
+```  
+![img.png](static/img/img2.png)
+
+  - 《肖申克的救赎》排名第一，评分高达9.6分
+- ### 2.2 根据电影时间长的电影排行榜
+```
+data_movie_analysis.movie_sort("runtime")
+```  
+![img.png](static/img/img3.png)
+
+   - 在时长排名的前十中并非所有都是耳熟能详的电影，所以我想知道电影时长和电影评分有没有关系
+
+- ### 2.3 根据电影评分人数的电影排行榜
+```
+data_movie_analysis.movie_sort("vote_num")
+```  
+![img.png](static/img/img4.png)
+
+- ### 2.4  根据电影评价数的电影排名
+```
+data_movie_analysis.movie_sort("comment_num")
+```  
+![img.png](static/img/img5.png)
+
+  - 从直接观察发不难看出电影评分人数和电影评价数有很大的相关性，那么我想知道这两者之间的相关系数是多少
+  - 如果评分人数和评价数有很强的正相关关系，那么可以说明愿意给电影打分的人也会愿意给电影评论，我想知道评分和评论的转化率
+  - 另外我想知道，评分高低对评价数有影响吗？比如说打高分的人更愿意评论还是打低分的人更愿意评论，还是愿意打分的都会评论
+
+- ### 2.5 最受欢迎的电影类型
+  接下来，将分别分析最受欢迎的电影类型genre、电影出品国家country、导演directedBy、演员starring、电影语言language。
+   - 由于电影类型，国家等不是一个，所以需要对该列进行循环统计，计数，排序等操作。
+```
+data_movie_analysis.count_list("genre")
+```  
+![img.png](static/img/img6.png)
+
+   - 好莱坞的传统，通常剧情片更容易得到大部分观众的认可，不过爱情片居然有这么多是我没有想到的
+
+- ### 2.6 最受欢迎的电影出品国家排行榜
+```
+data_movie_analysis.count_list("country")
+```  
+![img.png](static/img/img7.png)
+
+   - 毫无疑问，好莱坞大片在质量与成熟度上都远优于其他国家，但是我国的电影业也是蓬勃发展，期待
+     超过好莱坞的一天
+     
+- ### 2.7 最受欢迎的电影导演名单
+```
+data_movie_analysis.count_list("directedBy")
+```    
+![img.png](static/img/img8.png)
+- ### 2.8 最受欢迎的电影演员名单
+```
+data_movie_analysis.count_list("starring")
+```    
+![img.png](static/img/img9.png)
+
+  - 让我没有想到的是张国荣居然排在第一，不经让我很想知道他都出演了哪些电影。
 - ## 3. Echarts可视化
 - ## 4. 构建模型
 

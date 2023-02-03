@@ -115,8 +115,8 @@ if __name__ == '__main__':
     data_movie = clean_movie(data_movie)
     # 3.数据分析：数据排序top10分析
     data_movie_analysis = MovieAnalysis(data_movie)  # 创建一个类，将date数据传入，定义方法进行详细分析。
-    # data_movie_analysis.movie_sort("rating_num")  # 调用类中的对总评分的排序方法
-    print(data_movie_analysis.count_list("language"))
-    print(type(data_movie_analysis.count_list("country")))
+    # data_movie_analysis.movie_sort("comment_num")  # 调用类中的对总评分的排序方法
+    # print(data_movie_analysis.count_list("starring"))
+
     print("程序结束！")
 
